@@ -23,7 +23,7 @@ function movieApi(app){
         }
     });
 
-    router.get('/:moviesId', async function(req,res,next){
+    router.get('/:movieId', async function(req,res,next){
         const { movieId } = req.params;
         try{
             const movie = await moviesService.getMovie({movieId});

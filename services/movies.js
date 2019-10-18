@@ -1,31 +1,42 @@
-const { moviesMock } = require('../utils/mocks/movies');
+const MongoLib = require('../lib/mongo');
 //capa de negocio
 
 class MoviesService {
-    async getMovies(){
-        const movies = await Promise.resolve(moviesMock);
-        return movies || [];
-    }
+  constructor() {
+    this.collection = 'movies';
+    this.mongoBD = new MongoLib();
+  }
 
-    async getMovie(){
-        const movie = await Promise.resolve(moviesMock[0]);
-        return movie || [];
-    }
+  async getMovies({ tags }) {
+    const query = tags && { tags: { $in: tags } };
+    const movies = await this.mongoBD.getAll(this.collection, query);
 
-    async createMovie(){
-        const createMovieId = await Promise.resolve(moviesMock[0].id);
-        return createMovieId;
-    }
+    return movies || [];
+  }
 
-    async updateMovie(){
-        const updateMovieId = await Promise.resolve(moviesMock[0].id);
-        return updateMovieId;
-    }
+  async getMovie({ movieId }) {
+    const movie = await this.mongoBD.get(this.collection, movieId);
+    return movie || [];
+  }
 
-    async deleteMovie(){
-        const deleteMovieId = await Promise.resolve(moviesMock[0].id);
-        return deleteMovieId;
-    }
+  async createMovie({ movie }) {
+    const createMovieId = await this.mongoBD.create(this.collection ,movie);
+    return createMovieId;
+  }
+
+  async updateMovie({ movieId, movie } = {}) {
+    const updateMovieId = await this.mongoBD.update(
+      this.collection,
+      movieId,
+      movie
+    );
+    return updateMovieId;
+  }
+
+  async deleteMovie({ movieId }) {
+    const deleteMovieId = await this.mongoBD.delete(this.collection, movieId);
+    return deleteMovieId;
+  }
 }
 
 module.exports = MoviesService;
